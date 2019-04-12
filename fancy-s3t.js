@@ -1,20 +1,22 @@
 // Separate script to render the visualization
 // D3 is imported in the html file, where this script is executed
 
-var width = window.innerWidth,
-  height = window.innerHeight;
+// Needed and parametric variables
+var width = window.innerWidth, height = window.innerHeight;
+var rect_width = 30, rect_height = 10;
+var id_to_select = "#fancy-s3t"
 
-var svg = d3.select("#fancy-s3t").append("svg")
+var svg = d3.select(id_to_select).append("svg")
   .attr("width", width)
   .attr("height", height);
 
 var nodes_data = [
-  { "name": "Travis", "sex": "M" },
-  { "name": "Rake", "sex": "M" },
-  { "name": "Diana", "sex": "F" },
-  { "name": "Rachel", "sex": "F" },
-  { "name": "Shawn", "sex": "M" },
-  { "name": "Emerald", "sex": "F" }
+  { "name": "java" },
+  { "name": "html" },
+  { "name": "css" },
+  { "name": "python" },
+  { "name": "kotlin" },
+  { "name": "javascript" }
 ]
 
 // Set up the simulation 
@@ -30,27 +32,26 @@ simulation
   .force("charge_force", d3.forceManyBody())
   .force("center_force", d3.forceCenter(width / 2, height / 2));
 
-// Draw circles for the nodes 
+// Draw rounded rectangles for the nodes 
 var node = svg.append("g")
   .attr("class", "nodes")
-  .selectAll("circle")
+  .selectAll("rect")
   .data(nodes_data)
   .enter()
-  .append("circle")
-  .attr("r", 5)
-  .attr("fill", "red");
+  .append("rect")
+  .attr("height", rect_height)
+  .attr("width", rect_width)
+  .attr("rx", 2)
+  .attr("ry", 2)
+  .attr("fill", "green");
 
 // Add tick instructions: 
 simulation.on("tick", tickActions);
 
 // Create links data 
 var links_data = [
-  { "source": "Travis", "target": "Rake" },
-  { "source": "Diana", "target": "Rake" },
-  { "source": "Diana", "target": "Rachel" },
-  { "source": "Rachel", "target": "Rake" },
-  { "source": "Rachel", "target": "Shawn" },
-  { "source": "Emerald", "target": "Rachel" }
+  { "source": "html", "target": "css" },
+  { "source": "html", "target": "javascript" }
 ]
 
 // Create the link force 
@@ -72,10 +73,10 @@ var link = svg.append("g")
   .attr("stroke-width", 2);
 
 function tickActions() {
-  // Update circle positions each tick of the simulation 
+  // Update rect positions each tick of the simulation 
   node
-    .attr("cx", function (d) { return d.x; })
-    .attr("cy", function (d) { return d.y; });
+    .attr("x", function (d) { return d.x - rect_width / 2; })
+    .attr("y", function (d) { return d.y - rect_height / 2; });
 
   // update link positions 
   // Simply tells one end of the line to follow one node around
