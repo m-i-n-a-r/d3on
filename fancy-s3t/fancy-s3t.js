@@ -8,12 +8,19 @@ var border_radius = 10;
 var background_color = "#00ff00";
 var border_color = "#000000"
 var opacity = "0.0";
+var rect_height = 18;
+var rect_width = 36;
+var rect_corners = 6;
+var rect_color = "#999999"
 var width = 960;
-var height = 500;
+var height = 480;
 
+// The main container, it should scale to fit the screen div size
 var svg = d3.select(id_to_select).append("svg")
-    .attr("width", width)
-    .attr("height", height);
+    //.attr("width", width)
+    //.attr("height", height)
+    .attr("preserveAspectRatio", "xMinYMin meet")
+    .attr("viewBox", "0 0 " + width + " " + height)
 
 // The border of the graph, to make it more consistent 
 var borderPath = svg.append("rect")
@@ -66,17 +73,29 @@ d3.json("graph.json", function(error, json) {
       .call(force.drag);
 
   // The image used to represent a node
-  node.append("image")
+  /*node.append("image")
       .attr("xlink:href", "https://github.com/favicon.ico")
       .attr("x", -8)
       .attr("y", -8)
       .attr("width", 16)
-      .attr("height", 16);
+      .attr("height", 16);*/
 
+  // Rectangle as node background
+  node.append("rect")
+      .attr("x", (rect_width - (rect_width * 2)) / 2)
+      .attr("y", (rect_height - (rect_height * 2)) / 2)
+      .attr("height", rect_height)
+      .attr("width", rect_width)
+      .attr("rx", rect_corners)
+      .attr("ry", rect_corners)
+      .attr("fill", rect_color);
+  
   // The label of each node
   node.append("text")
-      .attr("dx", 0) // Distance from the center of the node
-      .attr("dy", ".35em")
+      .attr("dx", 0)
+      .attr("dy", 0)
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "central")
       .text(function(d) { return d.name });
 
   force.on("tick", function() {

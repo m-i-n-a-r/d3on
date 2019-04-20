@@ -4,7 +4,7 @@ D3on is a simple collection of **ideas** and components developed using the **D3
 ### Status: V 0.1
 
 ## Contents
-- **fancy-s3t**: a customizable set of moving and interactive canvas, to display a list of skills, products and so on!
+- **fancy-s3t**: a customizable set of moving and interactive canvas, to display a list of skills, products and so on! The list is taken from a json file. To test this locally, run a simple http server on your machine. If you have python3 installed, you can do that opening a cmd or terminal in your project folder and typing `python -m http.server`
 - More to come..
 
 ## Usage
