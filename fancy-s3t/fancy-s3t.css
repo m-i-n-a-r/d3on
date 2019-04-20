@@ -1,7 +1,13 @@
-.links line {
-    stroke: #000;
-    stroke-opacity: 1.0;
+
+.link {
+    stroke: #ccc;
+  }
+  
+.node text {
+    pointer-events: none;
+    font: 10px sans-serif;
 }
+
 .nodes rect {
     stroke: #000;
     stroke-width: 1.5px;

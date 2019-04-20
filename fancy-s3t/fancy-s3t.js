@@ -1,91 +1,90 @@
 // Separate script to render the visualization
 // D3 is imported in the html file, where this script is executed
-
-// Needed and parametric variables
-var width = window.innerWidth, height = window.innerHeight;
-var rect_width = 30, rect_height = 10;
-var id_to_select = "#fancy-s3t"
+ 
+// Some useful variables
+var id_to_select = "#fancy-s3t";
+var border = 4;
+var border_radius = 10;
+var background_color = "#00ff00";
+var border_color = "#000000"
+var opacity = "0.0";
+var width = 960;
+var height = 500;
 
 var svg = d3.select(id_to_select).append("svg")
-  .attr("width", width)
-  .attr("height", height);
+    .attr("width", width)
+    .attr("height", height);
 
-var nodes_data = [
-  { "name": "java" },
-  { "name": "html" },
-  { "name": "css" },
-  { "name": "python" },
-  { "name": "kotlin" },
-  { "name": "javascript" }
-]
+// The border of the graph, to make it more consistent 
+var borderPath = svg.append("rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("rx", border_radius)
+    .attr("ry", border_radius)
+    .attr("height", height)
+    .attr("width", width)
+    .attr("fill", "none")
+    .style("stroke", border_color)
+    .style("stroke-width", border);
 
-// Set up the simulation 
-// Nodes only for now 
-var simulation = d3.forceSimulation()
-  // Add nodes
-  .nodes(nodes_data);
+// The background of the graph    
+var bgPath = svg.append("rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("rx", border_radius)
+    .attr("ry", border_radius)
+    .attr("height", height)
+    .attr("width", width)
+    .attr("opacity", opacity)
+    .style("fill", background_color);
 
-// Add forces
-// we're going to add a charge to each node 
-// Also going to add a centering force
-simulation
-  .force("charge_force", d3.forceManyBody())
-  .force("center_force", d3.forceCenter(width / 2, height / 2));
+var force = d3.layout.force()
+    .gravity(0.05) // Defines the cohesion force between the nodes
+    .distance(70) // Minimum distance between linked nodes
+    .charge(-80) // How much a node repulse the others
+    .size([width, height]); // Area where the force is active
 
-// Add tick instructions: 
-simulation.on("tick", tickActions);
+// Load the json file containing the graph. This can't be done locally without an httpserver
+// Refer to https://stackoverflow.com/questions/17214293/importing-local-json-file-using-d3-json-does-not-work
+d3.json("graph.json", function(error, json) {
+  if (error) throw error;
 
-// Create links data 
-var links_data = [
-  { "source": "html", "target": "css" },
-  { "source": "html", "target": "javascript" }
-]
+  force
+      .nodes(json.nodes)
+      .links(json.links)
+      .start();
 
-// Create the link force 
-// We need the id accessor to use named sources and targets 
+  var link = svg.selectAll(".link")
+      .data(json.links)
+    .enter().append("line")
+      .attr("class", "link");
 
-var link_force = d3.forceLink(links_data)
-  .id(function (d) { return d.name; })
+  var node = svg.selectAll(".node")
+      .data(json.nodes)
+    .enter().append("g")
+      .attr("class", "node")
+      .call(force.drag);
 
-// Add a links force to the simulation
-// Specify links  in d3.forceLink argument   
-simulation.force("links", link_force)
+  // The image used to represent a node
+  node.append("image")
+      .attr("xlink:href", "https://github.com/favicon.ico")
+      .attr("x", -8)
+      .attr("y", -8)
+      .attr("width", 16)
+      .attr("height", 16);
 
-// Draw lines for the links, under the nodes
-var link = svg.append("g")
-  .attr("class", "links")
-  .selectAll("line")
-  .data(links_data)
-  .enter().append("line")
-  .attr("stroke-width", 2);
+  // The label of each node
+  node.append("text")
+      .attr("dx", 0) // Distance from the center of the node
+      .attr("dy", ".35em")
+      .text(function(d) { return d.name });
 
-// Draw rounded rectangles and texts for the nodes 
-var node = svg.append("g")
-.attr("class", "nodes")
-.selectAll("rect")
-.data(nodes_data)
-.enter()
-.append("rect")
-.attr("height", rect_height)
-.attr("width", rect_width)
-.attr("rx", 2)
-.attr("ry", 2)
-.attr("fill", "green")
+  force.on("tick", function() {
+    link.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
 
-function tickActions() {
-  // Update rect positions each tick of the simulation 
-  node
-    .attr("x", function (d) { return d.x - rect_width / 2; })
-    .attr("y", function (d) { return d.y - rect_height / 2; });
-
-  // Update link positions 
-  // Simply tells one end of the line to follow one node around
-  // And the other end of the line to follow the other node around
-  link
-    .attr("x1", function (d) { return d.source.x; })
-    .attr("y1", function (d) { return d.source.y; })
-    .attr("x2", function (d) { return d.target.x; })
-    .attr("y2", function (d) { return d.target.y; });
-
-}
-
+    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+  });
+});
