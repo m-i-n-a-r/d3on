@@ -32,19 +32,6 @@ simulation
   .force("charge_force", d3.forceManyBody())
   .force("center_force", d3.forceCenter(width / 2, height / 2));
 
-// Draw rounded rectangles for the nodes 
-var node = svg.append("g")
-  .attr("class", "nodes")
-  .selectAll("rect")
-  .data(nodes_data)
-  .enter()
-  .append("rect")
-  .attr("height", rect_height)
-  .attr("width", rect_width)
-  .attr("rx", 2)
-  .attr("ry", 2)
-  .attr("fill", "green");
-
 // Add tick instructions: 
 simulation.on("tick", tickActions);
 
@@ -64,7 +51,7 @@ var link_force = d3.forceLink(links_data)
 // Specify links  in d3.forceLink argument   
 simulation.force("links", link_force)
 
-// Draw lines for the links 
+// Draw lines for the links, under the nodes
 var link = svg.append("g")
   .attr("class", "links")
   .selectAll("line")
@@ -72,13 +59,26 @@ var link = svg.append("g")
   .enter().append("line")
   .attr("stroke-width", 2);
 
+// Draw rounded rectangles and texts for the nodes 
+var node = svg.append("g")
+.attr("class", "nodes")
+.selectAll("rect")
+.data(nodes_data)
+.enter()
+.append("rect")
+.attr("height", rect_height)
+.attr("width", rect_width)
+.attr("rx", 2)
+.attr("ry", 2)
+.attr("fill", "green")
+
 function tickActions() {
   // Update rect positions each tick of the simulation 
   node
     .attr("x", function (d) { return d.x - rect_width / 2; })
     .attr("y", function (d) { return d.y - rect_height / 2; });
 
-  // update link positions 
+  // Update link positions 
   // Simply tells one end of the line to follow one node around
   // And the other end of the line to follow the other node around
   link
