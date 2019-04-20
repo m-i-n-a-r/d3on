@@ -1,17 +1,20 @@
 // Separate script to render the visualization
 // D3 is imported in the html file, where this script is executed
  
-// Some useful variables
+// Some useful variables, all in the same place to simplify the configuration
 var id_to_select = "#fancy-s3t";
-var border = 4;
+var border = 3;
 var border_radius = 10;
 var background_color = "#00ff00";
-var border_color = "#000000"
+var border_color = "#000000";
 var opacity = "0.0";
-var rect_height = 18;
-var rect_width = 36;
-var rect_corners = 6;
-var rect_color = "#999999"
+var node_rect_height = 18;
+var node_rect_width = 66;
+var node_rect_corners = 6;
+var node_rect_border = 3;
+var node_rect_border_color = "#00ff00";
+var node_rect_color = "#44dd44";
+var node_text_color = "#ffffff"
 var width = 960;
 var height = 480;
 
@@ -20,7 +23,7 @@ var svg = d3.select(id_to_select).append("svg")
     //.attr("width", width)
     //.attr("height", height)
     .attr("preserveAspectRatio", "xMinYMin meet")
-    .attr("viewBox", "0 0 " + width + " " + height)
+    .attr("viewBox", "0 0 " + width + " " + height);
 
 // The border of the graph, to make it more consistent 
 var borderPath = svg.append("rect")
@@ -82,20 +85,21 @@ d3.json("graph.json", function(error, json) {
 
   // Rectangle as node background
   node.append("rect")
-      .attr("x", (rect_width - (rect_width * 2)) / 2)
-      .attr("y", (rect_height - (rect_height * 2)) / 2)
-      .attr("height", rect_height)
-      .attr("width", rect_width)
-      .attr("rx", rect_corners)
-      .attr("ry", rect_corners)
-      .attr("fill", rect_color);
+      .attr("x", (node_rect_width - (node_rect_width * 2)) / 2)
+      .attr("y", (node_rect_height - (node_rect_height * 2)) / 2)
+      .attr("height", node_rect_height)
+      .attr("width", node_rect_width)
+      .attr("rx", node_rect_corners)
+      .attr("ry", node_rect_corners)
+      .attr("fill", node_rect_color)
+      .style("stroke", node_rect_border_color)
+      .style("stroke-width", node_rect_border);
   
   // The label of each node
   node.append("text")
-      .attr("dx", 0)
-      .attr("dy", 0)
       .attr("text-anchor", "middle")
       .attr("dominant-baseline", "central")
+      .attr("fill", node_text_color)
       .text(function(d) { return d.name });
 
   force.on("tick", function() {

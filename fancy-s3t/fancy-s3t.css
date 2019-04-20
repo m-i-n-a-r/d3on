@@ -6,10 +6,4 @@
 .node text {
     pointer-events: none;
     font: 10px sans-serif;
-    text-anchor: middle; 
-}
-
-.nodes rect {
-    stroke: #000;
-    stroke-width: 1.5px;
 }
