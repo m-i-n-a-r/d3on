@@ -1,9 +1,15 @@
 
+/* Other useful styles */
+
 .link {
-    stroke: #ccc;
-  }
+    stroke: #ebebeb;
+    /* stroke-width: 1; the default value is probably good */
+}
   
 .node text {
     pointer-events: none;
-    font: 10px sans-serif;
+    font: 12px sans-serif;
+    /* transform each name in all-caps, for a better visualizazion */
+    text-transform: uppercase; 
+    font-weight: bold;
 }

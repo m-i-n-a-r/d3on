@@ -8,8 +8,8 @@ var border_radius = 10;
 var background_color = "#00ff00";
 var border_color = "#000000";
 var opacity = "0.0";
-var node_rect_height = 18;
-var node_rect_width = 66;
+var node_rect_height = 20;
+var node_rect_width = 72;
 var node_rect_corners = 6;
 var node_rect_border = 3;
 var node_rect_border_color = "#00ff00";
@@ -20,8 +20,6 @@ var height = 480;
 
 // The main container, it should scale to fit the screen div size
 var svg = d3.select(id_to_select).append("svg")
-    //.attr("width", width)
-    //.attr("height", height)
     .attr("preserveAspectRatio", "xMinYMin meet")
     .attr("viewBox", "0 0 " + width + " " + height);
 
@@ -50,8 +48,9 @@ var bgPath = svg.append("rect")
 
 var force = d3.layout.force()
     .gravity(0.05) // Defines the cohesion force between the nodes
-    .distance(70) // Minimum distance between linked nodes
-    .charge(-80) // How much a node repulse the others
+    .distance(90) // Minimum distance between linked nodes
+    .charge(-90) // How much a node repulse the others
+    .linkDistance(50)
     .size([width, height]); // Area where the force is active
 
 // Load the json file containing the graph. This can't be done locally without an httpserver
@@ -62,22 +61,23 @@ d3.json("graph.json", function(error, json) {
   force
       .nodes(json.nodes)
       .links(json.links)
+      .on("tick", tick)
       .start();
 
   var link = svg.selectAll(".link")
       .data(json.links)
     .enter().append("line")
       .attr("class", "link");
-
+  
   var node = svg.selectAll(".node")
       .data(json.nodes)
     .enter().append("g")
       .attr("class", "node")
       .call(force.drag);
 
-  // The image used to represent a node
+  // The image used to represent a node, if needed
   /*node.append("image")
-      .attr("xlink:href", "https://github.com/favicon.ico")
+      .attr("xlink:href", "https://direct.link.to.image")
       .attr("x", -8)
       .attr("y", -8)
       .attr("width", 16)
@@ -102,12 +102,19 @@ d3.json("graph.json", function(error, json) {
       .attr("fill", node_text_color)
       .text(function(d) { return d.name });
 
-  force.on("tick", function() {
+  // This function bounds the node inside the container, since there's no point in dragging them outside
+  function tick() {
+      node.attr("transform", function(d) {
+          var r = 16;
+          d.x = Math.max(r, Math.min(width - r, d.x));
+          d.y = Math.max(r, Math.min(height - r, d.y));
+          return "translate(" + d.x + "," + d.y + ")"
+  });
+
     link.attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
+  }
 
-    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-  });
 });
