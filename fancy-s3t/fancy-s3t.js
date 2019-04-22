@@ -2,19 +2,31 @@
 // D3 is imported in the html file, where this script is executed
  
 // Some useful variables, all in the same place to simplify the configuration
+// By default, the nodes contain a text on a rounded rectangle, and the rest is commented
 var id_to_select = "#fancy-s3t";
+
 var border = 3;
 var border_radius = 10;
 var background_color = "#00ff00";
 var border_color = "#000000";
 var opacity = "0.0";
-var node_rect_height = 20;
-var node_rect_width = 72;
+
+var node_rect_height = 24;
+var node_rect_width = 80;
 var node_rect_corners = 6;
 var node_rect_border = 3;
 var node_rect_border_color = "#00ff00";
 var node_rect_color = "#44dd44";
-var node_text_color = "#ffffff"
+
+var node_circle_radius = 28;
+var node_circle_border = 3;
+var node_circle_border_color = "#00ff00";
+var node_circle_color = "#44dd44";
+
+var node_text_color = "#ffffff";
+
+var circle_rect_boundaries = 0; // 0 if rectangles are being used or 1 if circle are being used
+
 var width = 960;
 var height = 480;
 
@@ -75,7 +87,7 @@ d3.json("graph.json", function(error, json) {
       .attr("class", "node")
       .call(force.drag);
 
-  // The image used to represent a node, if needed
+  // Image as node background
   /*node.append("image")
       .attr("xlink:href", "https://direct.link.to.image")
       .attr("x", -8)
@@ -94,7 +106,14 @@ d3.json("graph.json", function(error, json) {
       .attr("fill", node_rect_color)
       .style("stroke", node_rect_border_color)
       .style("stroke-width", node_rect_border);
-  
+
+  // Circle as node background
+  /*node.append("circle")
+      .attr("r", node_circle_radius)
+      .attr("fill", node_circle_color)
+      .style("stroke", node_circle_border_color)
+      .style("stroke-width", node_circle_border);*/
+
   // The label of each node
   node.append("text")
       .attr("text-anchor", "middle")
@@ -105,9 +124,16 @@ d3.json("graph.json", function(error, json) {
   // This function bounds the node inside the container, since there's no point in dragging them outside
   function tick() {
       node.attr("transform", function(d) {
-          var r = 16;
-          d.x = Math.max(r, Math.min(width - r, d.x));
-          d.y = Math.max(r, Math.min(height - r, d.y));
+          if (circle_rect_boundaries == 0) {
+              var border_width = node_rect_width / 2 + 3;
+              var border_height = node_rect_height / 2 + 3;
+          }
+          else { 
+              var border_width = node_circle_radius + 3;
+              var border_height = node_circle_radius + 3;
+          }
+          d.x = Math.max(border_width, Math.min(width - border_width, d.x));
+          d.y = Math.max(border_height, Math.min(height - border_height, d.y));
           return "translate(" + d.x + "," + d.y + ")"
   });
 
