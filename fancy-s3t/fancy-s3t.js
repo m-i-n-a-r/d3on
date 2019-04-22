@@ -24,6 +24,7 @@ var node_circle_border_color = "#00ff00";
 var node_circle_color = "#44dd44";
 
 var node_text_color = "#ffffff";
+var node_text_color_alt = "#0000ff";
 
 var circle_rect_boundaries = 0; // 0 if rectangles are being used or 1 if circle are being used
 
@@ -62,7 +63,7 @@ var force = d3.layout.force()
     .gravity(0.05) // Defines the cohesion force between the nodes
     .distance(90) // Minimum distance between linked nodes
     .charge(-90) // How much a node repulse the others
-    .linkDistance(50)
+    .linkDistance(100) // Length of the link line
     .size([width, height]); // Area where the force is active
 
 // Load the json file containing the graph. This can't be done locally without an httpserver
@@ -85,6 +86,9 @@ d3.json("graph.json", function(error, json) {
       .data(json.nodes)
     .enter().append("g")
       .attr("class", "node")
+      .on("mouseover", mouseover)
+      .on("mouseout", mouseout)
+      .on("click", click)
       .call(force.drag);
 
   // Image as node background
@@ -119,6 +123,7 @@ d3.json("graph.json", function(error, json) {
       .attr("text-anchor", "middle")
       .attr("dominant-baseline", "central")
       .attr("fill", node_text_color)
+      .attr("font-size", "0.8em")
       .text(function(d) { return d.name });
 
   // This function bounds the node inside the container, since there's no point in dragging them outside
@@ -142,5 +147,57 @@ d3.json("graph.json", function(error, json) {
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
   }
+
+  // The rectangle grows a bit when the mouse is over it
+  function mouseover() {
+      let new_height = node_rect_height + node_rect_height / 4;
+      let new_width = node_rect_width + node_rect_width / 4
+      d3.select(this).select("rect").transition()
+        .duration(750)
+        .attr("height", new_height)
+        .attr("width", new_width)
+        .attr("x", (new_width - (new_width * 2)) / 2)
+        .attr("y", (new_height - (new_height * 2)) / 2);
+      d3.select(this).select("text").transition()
+        .duration(750)
+        .attr("font-size", "1.0em")
+        .style("font-weight", "bold")
+  }
+  function mouseout() {
+      d3.select(this).select("rect").transition()
+          .duration(750)
+          .attr("height", node_rect_height)
+          .attr("width", node_rect_width)
+          .attr("x", (node_rect_width - (node_rect_width * 2)) / 2)
+          .attr("y", (node_rect_height - (node_rect_height * 2)) / 2);
+      d3.select(this).select("text").transition()
+          .duration(750)
+          .attr("font-size", "0.8em")
+          .style("font-weight", "bold")
+  }
+
+  // Same, but for circles
+  /*function mouseover() {
+      d3.select(this).select("circle").transition()
+          .duration(750)
+          .attr("r", node_circle_radius + 10);
+  }
+  function mouseout() {
+      d3.select(this).select("circle").transition()
+          .duration(750)
+          .attr("r", node_circle_radius + 10);
+  }*/
+
+  // Action to take on mouse click
+  function click() {
+      d3.select(this).select("text").transition("highlight1")
+          .duration(500)
+          .style("opacity", 0.5)
+          .style("fill", node_text_color_alt)
+          .transition("highlight2")
+          .duration(500)
+          .style("opacity", 1.0)
+          .style("fill", node_text_color);
+}
 
 });

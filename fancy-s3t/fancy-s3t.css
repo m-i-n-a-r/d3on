@@ -8,7 +8,7 @@
   
 .node text {
     pointer-events: none;
-    font: 12px sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     /* transform each name in all-caps, for a better visualizazion */
     text-transform: uppercase; 
     font-weight: bold;
