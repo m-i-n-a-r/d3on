@@ -152,38 +152,38 @@ d3.json("graph.json", function(error, json) {
   function mouseover() {
       let new_height = node_rect_height + node_rect_height / 4;
       let new_width = node_rect_width + node_rect_width / 4
-      d3.select(this).select("rect").transition()
+      d3.select(this).select("rect").transition("zoom_rect")
         .duration(750)
         .attr("height", new_height)
         .attr("width", new_width)
         .attr("x", (new_width - (new_width * 2)) / 2)
         .attr("y", (new_height - (new_height * 2)) / 2);
-      d3.select(this).select("text").transition()
+      d3.select(this).select("text").transition("zoom_text")
         .duration(750)
         .attr("font-size", "1.0em")
         .style("font-weight", "bold")
   }
   function mouseout() {
-      d3.select(this).select("rect").transition()
+      d3.select(this).select("rect").transition("dezoom_rect")
           .duration(750)
           .attr("height", node_rect_height)
           .attr("width", node_rect_width)
           .attr("x", (node_rect_width - (node_rect_width * 2)) / 2)
           .attr("y", (node_rect_height - (node_rect_height * 2)) / 2);
-      d3.select(this).select("text").transition()
+      d3.select(this).select("text").transition("dezoom_text")
           .duration(750)
           .attr("font-size", "0.8em")
           .style("font-weight", "bold")
   }
 
-  // Same, but for circles
+  // Same, but for circles.
   /*function mouseover() {
-      d3.select(this).select("circle").transition()
+      d3.select(this).select("circle").transition("zoom_circle")
           .duration(750)
           .attr("r", node_circle_radius + 10);
   }
   function mouseout() {
-      d3.select(this).select("circle").transition()
+      d3.select(this).select("circle").transition("zoom_circle")
           .duration(750)
           .attr("r", node_circle_radius + 10);
   }*/
