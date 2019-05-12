@@ -13,10 +13,8 @@ body {
     stroke-width: 2px;
     shape-rendering: crispEdges;
   }
-  #chart {
+  #rad3ar {
       position: absolute;
-      top: 50px;
-      left: 100px;
   }
     
     .toolTip {
