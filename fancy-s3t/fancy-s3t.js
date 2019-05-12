@@ -1,6 +1,6 @@
 // Separate script to render the visualization
 // D3 is imported in the html file, where this script is executed
- 
+
 // Some useful variables, all in the same place to simplify the configuration
 // By default, the nodes contain a text on a rounded rectangle, and the rest is commented
 var id_to_select = "#fancy-s3t";
@@ -68,136 +68,136 @@ var force = d3.layout.force()
 
 // Load the json file containing the graph. This can't be done locally without an httpserver
 // Refer to https://stackoverflow.com/questions/17214293/importing-local-json-file-using-d3-json-does-not-work
-d3.json("graph.json", function(error, json) {
-  if (error) throw error;
+d3.json("graph.json", function (error, json) {
+    if (error) throw error;
 
-  force
-      .nodes(json.nodes)
-      .links(json.links)
-      .on("tick", tick)
-      .start();
+    force
+        .nodes(json.nodes)
+        .links(json.links)
+        .on("tick", tick)
+        .start();
 
-  var link = svg.selectAll(".link")
-      .data(json.links)
-    .enter().append("line")
-      .attr("class", "link");
-  
-  var node = svg.selectAll(".node")
-      .data(json.nodes)
-    .enter().append("g")
-      .attr("class", "node")
-      .on("mouseover", mouseover)
-      .on("mouseout", mouseout)
-      .on("click", click)
-      .call(force.drag);
+    var link = svg.selectAll(".link")
+        .data(json.links)
+        .enter().append("line")
+        .attr("class", "link");
 
-  // Image as node background
-  /*node.append("image")
-      .attr("xlink:href", "https://direct.link.to.image")
-      .attr("x", -8)
-      .attr("y", -8)
-      .attr("width", 16)
-      .attr("height", 16);*/
+    var node = svg.selectAll(".node")
+        .data(json.nodes)
+        .enter().append("g")
+        .attr("class", "node")
+        .on("mouseover", mouseover)
+        .on("mouseout", mouseout)
+        .on("click", click)
+        .call(force.drag);
 
-  // Rectangle as node background
-  node.append("rect")
-      .attr("x", (node_rect_width - (node_rect_width * 2)) / 2)
-      .attr("y", (node_rect_height - (node_rect_height * 2)) / 2)
-      .attr("height", node_rect_height)
-      .attr("width", node_rect_width)
-      .attr("rx", node_rect_corners)
-      .attr("ry", node_rect_corners)
-      .attr("fill", node_rect_color)
-      .style("stroke", node_rect_border_color)
-      .style("stroke-width", node_rect_border);
+    // Image as node background
+    /*node.append("image")
+        .attr("xlink:href", "https://direct.link.to.image")
+        .attr("x", -8)
+        .attr("y", -8)
+        .attr("width", 16)
+        .attr("height", 16);*/
 
-  // Circle as node background
-  /*node.append("circle")
-      .attr("r", node_circle_radius)
-      .attr("fill", node_circle_color)
-      .style("stroke", node_circle_border_color)
-      .style("stroke-width", node_circle_border);*/
+    // Rectangle as node background
+    node.append("rect")
+        .attr("x", (node_rect_width - (node_rect_width * 2)) / 2)
+        .attr("y", (node_rect_height - (node_rect_height * 2)) / 2)
+        .attr("height", node_rect_height)
+        .attr("width", node_rect_width)
+        .attr("rx", node_rect_corners)
+        .attr("ry", node_rect_corners)
+        .attr("fill", node_rect_color)
+        .style("stroke", node_rect_border_color)
+        .style("stroke-width", node_rect_border);
 
-  // The label of each node
-  node.append("text")
-      .attr("text-anchor", "middle")
-      .attr("dominant-baseline", "central")
-      .attr("fill", node_text_color)
-      .attr("font-size", "0.8em")
-      .text(function(d) { return d.name });
+    // Circle as node background
+    /*node.append("circle")
+        .attr("r", node_circle_radius)
+        .attr("fill", node_circle_color)
+        .style("stroke", node_circle_border_color)
+        .style("stroke-width", node_circle_border);*/
 
-  // This function bounds the node inside the container, since there's no point in dragging them outside
-  function tick() {
-      node.attr("transform", function(d) {
-          if (circle_rect_boundaries == 0) {
-              var border_width = node_rect_width / 2 + 3;
-              var border_height = node_rect_height / 2 + 3;
-          }
-          else { 
-              var border_width = node_circle_radius + 3;
-              var border_height = node_circle_radius + 3;
-          }
-          d.x = Math.max(border_width, Math.min(width - border_width, d.x));
-          d.y = Math.max(border_height, Math.min(height - border_height, d.y));
-          return "translate(" + d.x + "," + d.y + ")"
-  });
+    // The label of each node
+    node.append("text")
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "central")
+        .attr("fill", node_text_color)
+        .attr("font-size", "0.8em")
+        .text(function (d) { return d.name });
 
-    link.attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
-  }
+    // This function bounds the node inside the container, since there's no point in dragging them outside
+    function tick() {
+        node.attr("transform", function (d) {
+            if (circle_rect_boundaries == 0) {
+                var border_width = node_rect_width / 2 + 3;
+                var border_height = node_rect_height / 2 + 3;
+            }
+            else {
+                var border_width = node_circle_radius + 3;
+                var border_height = node_circle_radius + 3;
+            }
+            d.x = Math.max(border_width, Math.min(width - border_width, d.x));
+            d.y = Math.max(border_height, Math.min(height - border_height, d.y));
+            return "translate(" + d.x + "," + d.y + ")"
+        });
 
-  // The rectangle grows a bit when the mouse is over it
-  function mouseover() {
-      let new_height = node_rect_height + node_rect_height / 4;
-      let new_width = node_rect_width + node_rect_width / 4
-      d3.select(this).select("rect").transition("zoom_rect")
-        .duration(750)
-        .attr("height", new_height)
-        .attr("width", new_width)
-        .attr("x", (new_width - (new_width * 2)) / 2)
-        .attr("y", (new_height - (new_height * 2)) / 2);
-      d3.select(this).select("text").transition("zoom_text")
-        .duration(750)
-        .attr("font-size", "1.0em")
-        .style("font-weight", "bold")
-  }
-  function mouseout() {
-      d3.select(this).select("rect").transition("dezoom_rect")
-          .duration(750)
-          .attr("height", node_rect_height)
-          .attr("width", node_rect_width)
-          .attr("x", (node_rect_width - (node_rect_width * 2)) / 2)
-          .attr("y", (node_rect_height - (node_rect_height * 2)) / 2);
-      d3.select(this).select("text").transition("dezoom_text")
-          .duration(750)
-          .attr("font-size", "0.8em")
-          .style("font-weight", "bold")
-  }
+        link.attr("x1", function (d) { return d.source.x; })
+            .attr("y1", function (d) { return d.source.y; })
+            .attr("x2", function (d) { return d.target.x; })
+            .attr("y2", function (d) { return d.target.y; });
+    }
 
-  // Same, but for circles.
-  /*function mouseover() {
-      d3.select(this).select("circle").transition("zoom_circle")
-          .duration(750)
-          .attr("r", node_circle_radius + 10);
-  }
-  function mouseout() {
-      d3.select(this).select("circle").transition("zoom_circle")
-          .duration(750)
-          .attr("r", node_circle_radius + 10);
-  }*/
+    // The rectangle grows a bit when the mouse is over it
+    function mouseover() {
+        let new_height = node_rect_height + node_rect_height / 4;
+        let new_width = node_rect_width + node_rect_width / 4
+        d3.select(this).select("rect").transition("zoom_rect")
+            .duration(750)
+            .attr("height", new_height)
+            .attr("width", new_width)
+            .attr("x", (new_width - (new_width * 2)) / 2)
+            .attr("y", (new_height - (new_height * 2)) / 2);
+        d3.select(this).select("text").transition("zoom_text")
+            .duration(750)
+            .attr("font-size", "1.0em")
+            .style("font-weight", "bold")
+    }
+    function mouseout() {
+        d3.select(this).select("rect").transition("dezoom_rect")
+            .duration(750)
+            .attr("height", node_rect_height)
+            .attr("width", node_rect_width)
+            .attr("x", (node_rect_width - (node_rect_width * 2)) / 2)
+            .attr("y", (node_rect_height - (node_rect_height * 2)) / 2);
+        d3.select(this).select("text").transition("dezoom_text")
+            .duration(750)
+            .attr("font-size", "0.8em")
+            .style("font-weight", "bold")
+    }
 
-  // Action to take on mouse click
-  function click() {
-      d3.select(this).select("text").transition("highlight1")
-          .duration(500)
-          .style("opacity", 0.5)
-          .style("fill", node_text_color_alt)
-          .transition("highlight2")
-          .duration(500)
-          .style("opacity", 1.0)
-          .style("fill", node_text_color);
-}
+    // Same, but for circles.
+    /*function mouseover() {
+        d3.select(this).select("circle").transition("zoom_circle")
+            .duration(750)
+            .attr("r", node_circle_radius + 10);
+    }
+    function mouseout() {
+        d3.select(this).select("circle").transition("zoom_circle")
+            .duration(750)
+            .attr("r", node_circle_radius + 10);
+    }*/
+
+    // Action to take on mouse click
+    function click() {
+        d3.select(this).select("text").transition("highlight1")
+            .duration(500)
+            .style("opacity", 0.5)
+            .style("fill", node_text_color_alt)
+            .transition("highlight2")
+            .duration(500)
+            .style("opacity", 1.0)
+            .style("fill", node_text_color);
+    }
 
 });
