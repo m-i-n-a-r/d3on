@@ -5,20 +5,17 @@
 var id_to_select = "#rad3ar";
 var width = 480;
 var height = 480;
-
-// Config for the Radar chart
-var config = {
-    w: width,
-    h: height,
-    maxValue: 100,
-    levels: 5,
-    ExtraWidthX: 300
-}
+var max_value = 100;
+var levels = 5;
+var extra_width_x = 300;
+var data_colors = ["#6F257F", "#CA0D59", "#FF00FF", "#FFFF00", "#FF0000", "#00FFFF", "#00FF00", "#0000FF", "#000000", "#FD9800"];
+var data_number = 10; // The number of data-points in the json (or an higher number)
+var detail_levels = 10; // Number of guidelines in the chart for each sector
 
 //Call function to draw the Radar chart
 d3.json("data-points.json", function (error, data) {
     if (error) throw error;
-    RadarChart.draw("#rad3ar", data, config);
+    RadarChart.draw(id_to_select, data);
 });
 
 var svg = d3.select('body')
@@ -28,15 +25,14 @@ var svg = d3.select('body')
     .attr("height", height);
 
 var RadarChart = {
-    draw: function (id, d, options) {
-        console.log("sto disegnando");
+    draw: function (id, d) {
         var cfg = {
             radius: 5,
             w: 600,
             h: 600,
             factor: 1,
             factorLegend: .85,
-            levels: 3,
+            levels: detail_levels,
             maxValue: 0,
             radians: 2 * Math.PI,
             opacityArea: 0.5,
@@ -45,20 +41,12 @@ var RadarChart = {
             TranslateY: 30,
             ExtraWidthX: 100,
             ExtraWidthY: 100,
-            color: d3.scaleOrdinal().range(["#6F257F", "#CA0D59"])
+            color: d3.scaleOrdinal().range(data_colors)
         };
-
-        if ('undefined' !== typeof options) {
-            for (var i in options) {
-                if ('undefined' !== typeof options[i]) {
-                    cfg[i] = options[i];
-                }
-            }
-        }
 
         cfg.maxValue = 100;
 
-        var allAxis = (d[0].map(function (i, j) { return i.axis }));
+        var allAxis = (d[0].map(function (i, j) { return i.area }));
         var total = allAxis.length;
         var radius = cfg.factor * Math.min(cfg.w / 2, cfg.h / 2);
         var Format = d3.format('%');
@@ -147,7 +135,7 @@ var RadarChart = {
                     ]);
                 });
             dataValues.push(dataValues[0]);
-            g.selectAll(".axis")
+            g.selectAll(".area")
                 .data([dataValues])
                 .enter()
                 .append("polygon")
