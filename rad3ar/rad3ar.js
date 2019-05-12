@@ -3,11 +3,8 @@
 
 // Some useful variables, all in the same place to simplify the configuration
 var id_to_select = "#rad3ar";
-var width = 960;
+var width = 450;
 var height = 450;
-var max_value = 100;
-var levels = 5;
-var extra_width_x = 300;
 var data_colors = ["#ff3300", "#ff9900", "#cccc00", "#669900", "#00cc00", "#00cc99", "#006699", "#6600ff", "#cc00ff", "#ff3399"];
 var detail_levels = 10; // Number of guidelines in the chart for each sector
 var vertex_radius = 4;
@@ -16,27 +13,24 @@ var factor = 1;
 var factor_legend = .85;
 var radians = 2 * Math.PI;
 var opacity_area = 0.5;
-var to_right = 0;
-var translate_x = 0;
+var to_right = 10;
+var translate_x = (width / 2) ;
 var translate_y = 30;
-var extra_width_x = 0;
-var extra_width_y = 0;
 var color = d3.scaleOrdinal().range(data_colors);
-var max_value = 100;
+var legend_font_color = "#111111";
+var max_value = 100; // Max possible value for a data point attribute
 
 // Draw the star chart
 d3.json("data-points.json", function (error, data) {
     if (error) throw error;
-    startChart.draw(id_to_select, data);
+    star_chart.draw(id_to_select, data);
 });
 
 var svg = d3.select(id_to_select)
     .selectAll("svg")
-    .append("svg")
-    .attr("preserveAspectRatio", "xMinYMin meet")
-    .attr("viewBox", "0 0 " + width + " " + height);
+    .append("svg");
 
-var startChart = {
+var star_chart = {
     draw: function (id, d) {
         var all_axis = (d[0].map(function (i, j) { return i.area }));
         var total = all_axis.length;
@@ -46,17 +40,17 @@ var startChart = {
 
         var g = d3.select(id)
             .append("svg")
-            .attr("preserveAspectRatio", "xMinYMin meet")
-            .attr("viewBox", "0 0 " + width + " " + height)
+            .attr("preserveAspectRatio", "xMaxYMin meet")
+            .attr("viewBox", "0 0 " + width * 2.1 + " " + height)
             .append("g")
             .attr("transform", "translate(" + translate_x + "," + translate_y + ")");
 
         var tooltip;
 
-        // Circular segments
+        // Segments for each detail level
         for (var j = 0; j < detail_levels; j++) {
             var level_factor = factor * radius * ((j + 1) / detail_levels);
-            g.selectAll(".levels")
+            g.selectAll(".detail_levels")
                 .data(all_axis)
                 .enter()
                 .append("svg:line")
@@ -71,10 +65,11 @@ var startChart = {
                 .attr("transform", "translate(" + (width / 2 - level_factor) + ", " + (height / 2 - level_factor) + ")");
         }
 
-        // Text indicating at what % each level is
+        // Text indicating the value of each level
         for (var j = 0; j < detail_levels; j++) {
-            var level_factor = factor * radius * ((j + 1) / levels);
-            g.selectAll(".levels")
+            var level_factor = factor * radius * ((j + 1) / detail_levels);
+            g.selectAll(".detail_levels") // TODO select the elements of a missing class!
+                .data(d[j]) // TODO 5 texts per level are generated
                 .enter()
                 .append("svg:text")
                 .attr("x", function (d) { return level_factor * (1 - factor * Math.sin(0)); })
@@ -83,7 +78,7 @@ var startChart = {
                 .style("font-family", "sans-serif")
                 .style("font-size", "10px")
                 .attr("transform", "translate(" + (width / 2 - level_factor + to_right) + ", " + (height / 2 - level_factor) + ")")
-                .attr("fill", "#737373")
+                .attr("fill", legend_font_color)
                 .text((j + 1) * 100 / detail_levels);
         }
 
@@ -174,7 +169,7 @@ var startChart = {
                         width / 2 * (1 - (parseFloat(Math.max(j.value, 0)) / max_value) * factor * Math.sin(i * radians / total)),
                         height / 2 * (1 - (parseFloat(Math.max(j.value, 0)) / max_value) * factor * Math.cos(i * radians / total))
                     ]);
-                    return width / 2 * (1 - (Math.max(j.value, 0) / max_value) * factor * Math.sin(i * radians / total));
+                    return (height / 2 * (1 - (Math.max(j.value, 0) / max_value) * factor * Math.sin(i * radians / total)));
                 })
                 .attr("cy", function (j, i) {
                     return height / 2 * (1 - (Math.max(j.value, 0) / max_value) * factor * Math.cos(i * radians / total));

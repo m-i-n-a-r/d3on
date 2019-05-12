@@ -13,9 +13,6 @@ body {
     stroke-width: 2px;
     shape-rendering: crispEdges;
   }
-  #rad3ar {
-      position: absolute;
-  }
     
     .toolTip {
     pointer-events: none;
