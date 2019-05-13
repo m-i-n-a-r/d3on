@@ -7,7 +7,9 @@ var width = 450;
 var height = 450;
 var padding_height = 20;
 var padding_width = 0;
-var data_colors = ["#ff3300", "#ff9900", "#cccc00", "#669900", "#00cc00", "#00cc99", "#006699", "#6600ff", "#cc00ff", "#ff3399"];
+
+// Colors of the data-point polygons, generated using https://codepen.io/BangEqual/pen/VLNowO
+var data_colors = ["#00b215","#00b22a","#00b13f","#00b054","#00b069","#00af7d","#00af92","#00aea7","#00adbc","#00add1"];
 var detail_levels = 10; // Number of guidelines in the chart for each sector
 var factor = 1;
 var factor_legend = .85;
@@ -22,6 +24,7 @@ var vertex_radius = 4;
 var vertex_stroke_color = "#000000";
 var vertex_stroke = 1;
 var legend_font_color = "#111111";
+var transition_duration = 2000;
 var max_value = 100; // Max possible value for a data point attribute
 
 // Draw the star chart
@@ -145,18 +148,24 @@ var star_chart = {
                 .style("fill-opacity", 0)
                 // Click action
                 .on("click", function (d) {
-                    z = "polygon." + d3.select(this).attr("class");
-                    /*g.selectAll("polygon").transition(800)
-                        .style("fill-opacity", 0.15);*/
-                    g.selectAll(z).transition(800)
-                        .style("fill", color(series))
+                    selected = "polygon." + d3.select(this).attr("class");
+                    // Animate the other polygons 
+                    g.selectAll("polygon").transition(transition_duration)
+                        .style("stroke-width", "2px")
+                        .style("stroke-opacity", 0.2);
+                    // Animate the selected polygon
+                    g.selectAll(selected).transition(transition_duration)
+                        .style("fill", d3.select(this).style("stroke"))
                         .style("fill-opacity", .8);
                 })
                 // Mouseout action
                 .on('mouseout', function () {
-                    g.selectAll("polygon").transition(800)
+                    g.selectAll("polygon").transition(transition_duration)
+                        .style("fill-opacity", .0)
+                        .transition(transition_duration)
                         .style("fill", "none")
-                        //.style("fill-opacity", opacity_area);
+                        .style("stroke-width", "4px")
+                        .style("stroke-opacity", 1);
                 });
             series++;
         });
