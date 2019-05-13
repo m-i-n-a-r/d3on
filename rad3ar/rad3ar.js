@@ -5,18 +5,22 @@
 var id_to_select = "#rad3ar";
 var width = 450;
 var height = 450;
+var padding_height = 20;
+var padding_width = 0;
 var data_colors = ["#ff3300", "#ff9900", "#cccc00", "#669900", "#00cc00", "#00cc99", "#006699", "#6600ff", "#cc00ff", "#ff3399"];
 var detail_levels = 10; // Number of guidelines in the chart for each sector
-var vertex_radius = 4;
-var vertex_stroke_color = "#000000";
 var factor = 1;
 var factor_legend = .85;
 var radians = 2 * Math.PI;
-var opacity_area = 0.5;
-var to_right = 10;
+var opacity_area = 0.4; // The opacity of each area 
+var legend_to_right = 10; // Horizontal translation for the legend labels
+var label_translate_y = -16; // Vertical translation for the axis labels
 var translate_x = (width / 2) ;
 var translate_y = 30;
 var color = d3.scaleOrdinal().range(data_colors);
+var vertex_radius = 4;
+var vertex_stroke_color = "#000000";
+var vertex_stroke = 1;
 var legend_font_color = "#111111";
 var max_value = 100; // Max possible value for a data point attribute
 
@@ -32,7 +36,7 @@ var svg = d3.select(id_to_select)
 
 var star_chart = {
     draw: function (id, d) {
-        var all_axis = (d[0].map(function (i, j) { return i.area }));
+        var all_axis = (d[0].map(function (i, j) { return i.axis }));
         var total = all_axis.length;
         var radius = factor * Math.min(width / 2, height / 2);
         var Format = d3.format('%');
@@ -40,8 +44,8 @@ var star_chart = {
 
         var g = d3.select(id)
             .append("svg")
-            .attr("preserveAspectRatio", "xMaxYMin meet")
-            .attr("viewBox", "0 0 " + width * 2.1 + " " + height)
+            .attr("preserveAspectRatio", "xMidYMid meet")
+            .attr("viewBox", "0 0 " + ((width * 2) + padding_width) + " " + (height + padding_height))
             .append("g")
             .attr("transform", "translate(" + translate_x + "," + translate_y + ")");
 
@@ -68,8 +72,8 @@ var star_chart = {
         // Text indicating the value of each level
         for (var j = 0; j < detail_levels; j++) {
             var level_factor = factor * radius * ((j + 1) / detail_levels);
-            g.selectAll(".detail_levels") // TODO select the elements of a missing class!
-                .data(d[j]) // TODO 5 texts per level are generated
+            g.selectAll(".detail_levels")
+                .data([1]) // Dummy data
                 .enter()
                 .append("svg:text")
                 .attr("x", function (d) { return level_factor * (1 - factor * Math.sin(0)); })
@@ -77,7 +81,7 @@ var star_chart = {
                 .attr("class", "legend")
                 .style("font-family", "sans-serif")
                 .style("font-size", "10px")
-                .attr("transform", "translate(" + (width / 2 - level_factor + to_right) + ", " + (height / 2 - level_factor) + ")")
+                .attr("transform", "translate(" + (width / 2 - level_factor + legend_to_right) + ", " + (height / 2 - level_factor) + ")")
                 .attr("fill", legend_font_color)
                 .text((j + 1) * 100 / detail_levels);
         }
@@ -89,7 +93,8 @@ var star_chart = {
             .enter()
             .append("g")
             .attr("class", "axis");
-
+        
+        // Axis
         axis.append("line")
             .attr("x1", width / 2)
             .attr("y1", height / 2)
@@ -99,6 +104,7 @@ var star_chart = {
             .style("stroke", "grey")
             .style("stroke-width", "1px");
 
+        // Axis labels
         axis.append("text")
             .attr("class", "legend")
             .text(function (d) { return d })
@@ -106,11 +112,11 @@ var star_chart = {
             .style("font-size", "11px")
             .attr("text-anchor", "middle")
             .attr("dy", "1.5em")
-            .attr("transform", function (d, i) { return "translate(0, -10)" })
+            .attr("transform", function (d, i) { return "translate(0, "+ label_translate_y + ")" })
             .attr("x", function (d, i) { return width / 2 * (1 - factor_legend * Math.sin(i * radians / total)) - 60 * Math.sin(i * radians / total); })
             .attr("y", function (d, i) { return height / 2 * (1 - Math.cos(i * radians / total)) - 20 * Math.cos(i * radians / total); });
 
-
+        // Polygons
         d.forEach(function (y, x) {
             dataValues = [];
             g.selectAll(".nodes")
@@ -126,7 +132,7 @@ var star_chart = {
                 .enter()
                 .append("polygon")
                 .attr("class", "radar-chart-serie" + series)
-                .style("stroke-width", "2px")
+                .style("stroke-width", "4px")
                 .style("stroke", color(series))
                 .attr("points", function (d) {
                     var str = "";
@@ -135,22 +141,23 @@ var star_chart = {
                     }
                     return str;
                 })
-                .style("fill", function (j, i) { return color(series) })
-                .style("fill-opacity", opacity_area)
+                .style("fill", "none")
+                .style("fill-opacity", 0)
+                // Click action
                 .on("click", function (d) {
                     z = "polygon." + d3.select(this).attr("class");
-                    g.selectAll("polygon")
-                        .transition(200)
-                        .style("fill-opacity", 0.1);
-                    g.selectAll(z)
-                        .transition(200)
-                        .style("fill-opacity", .7);
+                    /*g.selectAll("polygon").transition(800)
+                        .style("fill-opacity", 0.15);*/
+                    g.selectAll(z).transition(800)
+                        .style("fill", color(series))
+                        .style("fill-opacity", .8);
                 })
-                /*.on('mouseout', function () {
-                    g.selectAll("polygon")
-                        .transition(200)
-                        .style("fill-opacity", opacity_area);
-                });*/
+                // Mouseout action
+                .on('mouseout', function () {
+                    g.selectAll("polygon").transition(800)
+                        .style("fill", "none")
+                        //.style("fill-opacity", opacity_area);
+                });
             series++;
         });
         series = 0;
@@ -176,13 +183,14 @@ var star_chart = {
                 })
                 .attr("data-id", function (j) { return j.axis })
                 .style("fill", color(series))
-                .style("stroke-width", "2px")
+                .style("stroke-width", vertex_stroke)
                 .style("stroke", vertex_stroke_color)
-                .style("fill-opacity", .9)
+                .style("stroke-opacity", .8)
+                .style("fill-opacity", .7)
                 .on('mouseover', function (d) {
-                    // A bubble showing the value of the selected vertex
+                    // A bubble showing the value of the selected vertex, refer to the css
                     tooltip
-                        .style("left", d3.event.pageX - 40 + "px")
+                        .style("left", d3.event.pageX - 50 + "px")
                         .style("top", d3.event.pageY - 80 + "px")
                         .style("display", "inline-block")
                         .html((d.axis) + "<br><span>" + (d.value) + "</span>");
