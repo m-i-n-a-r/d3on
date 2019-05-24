@@ -48,6 +48,7 @@
      inkscape:window-maximized="1"
      inkscape:current-layer="svg4" />
   <path
+     fill="#ffffff" 
      d="M 10,19 8,20.5 V 22 l 3.5,-1 3.5,1 V 20.5 L 13,19 Z"
      id="path2"
      inkscape:connector-curvature="0"
