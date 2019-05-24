@@ -6,7 +6,7 @@ D3on is a simple collection of **ideas** and components developed using the **D3
 ## Contents
 - **fancy-s3t**: a customizable set of moving and interactive nodes, to display a list of skills, products and so on! The list is taken from a json file, and a variety of animations and actions are possible.
 - **rad3ar**: a radar-style (also called star or spider or Kiviat plot) interactive and customizable visualization. The data-points are taken from a json file and can be focused and animated easily.
-- **svgreat**: a simple svg visualization, where an svg is splitted in pieces, and the properties of each piece are controlled from a json. Useful to obtain animated icons and logos. I suggest to use Inkscape to split a single svg in multiple pieces. **[WIP]**
+- **patt3rn**: a simple svg visualization, where an svg can be splitted in pieces, and the properties are controlled from a json. Useful to obtain background patterns, can be adapted to make animated logos. I suggest to use Inkscape to split a single svg in multiple pieces, if needed. The example shows a pattern of flying airplanes.
 - **sparky-icon**: just select the id of a div or img tag in your page, choose an image and select the effects to apply, to obtain a vivid and animated image or icon. Just make sure to select an icon or an image! **[WIP]**
 
 ## Avoid cross origin requests

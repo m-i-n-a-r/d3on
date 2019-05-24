@@ -1,0 +1,46 @@
+[
+    [
+        {
+            "attribute": "Width",
+            "value": 100
+        },
+        {
+            "attribute": "Height",
+            "value": 100
+        },
+        {
+            "attribute": "XCoordinate",
+            "value": 40
+        },
+        {
+            "attribute": "YCoordinate",
+            "value": 20
+        },
+        {
+            "attribute": "Opacity",
+            "value": 1.0
+        }
+    ],
+    [
+        {
+            "attribute": "Width",
+            "value": 80
+        },
+        {
+            "attribute": "Height",
+            "value": 80
+        },
+        {
+            "attribute": "XCoordinate",
+            "value": 230
+        },
+        {
+            "attribute": "YCoordinate",
+            "value": 200
+        },
+        {
+            "attribute": "Opacity",
+            "value": 0.9
+        }
+    ]
+]
