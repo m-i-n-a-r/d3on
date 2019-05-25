@@ -60,50 +60,51 @@ d3.json("patt3rn-data.json", function (error, data) {
     });
 });
 
-    // Animate the background and the pattern svgs continuously 
-    function continuousTransitionBackground() {
-        // Background
-        d3.select("body").transition("background_in").duration(3000).style("background-color", first_bg_color)
-            .on("end", function () {
-                d3.select(this).transition("background_out").duration(3000).style("background-color", second_bg_color)
-                    .on("end", function () { continuousTransitionBackground(); });
-            });
-    }
+// Animate the background and the pattern svgs continuously 
+function continuousTransitionBackground() {
+    // Background
+    d3.select("body").transition("background_in").duration(3000).style("background-color", first_bg_color)
+        .on("end", function () {
+            d3.select(this).transition("background_out").duration(3000).style("background-color", second_bg_color)
+                .on("end", function () { continuousTransitionBackground(); });
+        });
+}
 
-    function continuousTransitionPattern() {
-        // Pattern svgs: to modify g elements, a transformation is needed
-        d3.selectAll(".pattern").transition("pattern_in").duration(10000)
-            .attr("transform", "translate(" + 400 + "," + -100 + ")")
-            .on("end", function () {
-                d3.select(this).transition("pattern_out").duration(10000)
-                    .attr("transform", "translate(" + 0 + "," + 0 + ")")
-                    .on("end", function () { continuousTransitionPattern(); });
-            });
-    }
+function continuousTransitionPattern() {
+    // Pattern svgs: to modify g elements, a transformation is needed
+    d3.selectAll(".pattern").transition("pattern_in").duration(10000)
+        .attr("transform", "translate(" + 400 + "," + -100 + ")")
+        .on("end", function () {
+            d3.select(this).transition("pattern_out").duration(10000)
+                .attr("transform", "translate(" + 0 + "," + 0 + ")")
+                .on("end", function () { continuousTransitionPattern(); });
+        });
+}
 
-    // Mouse over an svg of the pattern
-    function mouseover() {
-        d3.select(this).transition("wiggle_in")
-            .duration(750)
-            .style("opacity", 1);
-    }
+// Mouse over an svg of the pattern
+function mouseover() {
+    d3.select(this).transition("wiggle_in")
+        .duration(750)
+        .style("opacity", 1);
+}
 
-    // Mouse out of an svg of the pattern
-    function mouseout() {
-        d3.select(this).transition("wiggle_out")
-            .duration(750)
-            .style("opacity", svg_primary_opacity);
-    }
+// Mouse out of an svg of the pattern
+function mouseout() {
+    d3.select(this).transition("wiggle_out")
+        .duration(750)
+        .style("opacity", svg_primary_opacity);
+}
 
-    // Mouse click on an svg of the pattern
-    function click() {
-        d3.select(this).transition("boom")
-            .duration(1000)
-            .style("opacity", 0)
-            .transition()
-            .duration(10)
-            .attr("width", 0);
-    }
-    // Animate the pattern after a certain time
-    setTimeout(continuousTransitionPattern, 1500);
+// Mouse click on an svg of the pattern
+function click() {
+    d3.select(this).transition("boom")
+        .duration(1000)
+        .style("opacity", 0)
+        .transition()
+        .duration(10)
+        .attr("width", 0);
+}
+
+// Animate the pattern after a certain time
+setTimeout(continuousTransitionPattern, 1500);
 continuousTransitionBackground();

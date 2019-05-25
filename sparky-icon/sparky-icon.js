@@ -31,8 +31,8 @@ function mouseover() {
     icon.transition("zoom_rect")
         .duration(750)
         .attr("x", "80")
-        .attr("height", 300)
-        .attr("width", 300);
+        .attr("height", 250)
+        .attr("width", 250);
 }
 
 // Mouse out of the image
@@ -49,9 +49,7 @@ function click() {
     icon.transition("highlight")
         .duration(500)
         .style("opacity", 0.5)
-        .style("fill", "#ff0000")
         .transition("highlight2")
         .duration(500)
-        .style("opacity", 1.0)
-        .style("fill", "#ffffff");
+        .style("opacity", 1.0);
 }
