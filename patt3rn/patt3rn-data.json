@@ -17,8 +17,8 @@
             "value": -250
         },
         {
-            "attribute": "Opacity",
-            "value": 1.0
+            "attribute": "Wings",
+            "value": 70
         }
     ],
     [
@@ -39,8 +39,30 @@
             "value": -200
         },
         {
-            "attribute": "Opacity",
-            "value": 0.9
+            "attribute": "Wings",
+            "value": 70
+        }
+    ],
+    [
+        {
+            "attribute": "Width",
+            "value": 90
+        },
+        {
+            "attribute": "Height",
+            "value": 90
+        },
+        {
+            "attribute": "XCoordinate",
+            "value": 430
+        },
+        {
+            "attribute": "YCoordinate",
+            "value": -100
+        },
+        {
+            "attribute": "Wings",
+            "value": 50
         }
     ]
 ]
