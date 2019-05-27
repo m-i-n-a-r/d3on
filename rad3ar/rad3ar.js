@@ -9,7 +9,7 @@ var padding_height = 20;
 var padding_width = 0;
 
 // Colors of the data-point polygons, generated using https://codepen.io/BangEqual/pen/VLNowO
-var data_colors = ["#00b215","#00b22a","#00b13f","#00b054","#00b069","#00af7d","#00af92","#00aea7","#00adbc","#00add1"];
+var data_colors = ["#1700e8", "#2e00d1", "#4600b9", "#5d00a2", "#74008b", "#8b0074", "#a2005d", "#b90046", "#d1002e", "#e80017"];
 var detail_levels = 10; // Number of guidelines in the chart for each sector
 var factor = 1;
 var factor_legend = .85;
@@ -17,7 +17,7 @@ var radians = 2 * Math.PI;
 var opacity_area = 0.4; // The opacity of each area 
 var legend_to_right = 10; // Horizontal translation for the legend labels
 var label_translate_y = -16; // Vertical translation for the axis labels
-var translate_x = (width / 2) ;
+var translate_x = (width / 2);
 var translate_y = 30;
 var color = d3.scaleOrdinal().range(data_colors);
 var vertex_radius = 4;
@@ -25,6 +25,7 @@ var vertex_stroke_color = "#000000";
 var vertex_stroke = 1;
 var legend_font_color = "#111111";
 var transition_duration = 2000;
+var ease_type = "easeBack"; // easeElastic, easeBounce, easeLinear, easeSin, easeQuad, easeCubic, easePoly, easeCircle, easeExp, easeBack
 var max_value = 100; // Max possible value for a data point attribute
 
 // Draw the star chart
@@ -96,7 +97,7 @@ var star_chart = {
             .enter()
             .append("g")
             .attr("class", "axis");
-        
+
         // Axis
         axis.append("line")
             .attr("x1", width / 2)
@@ -115,7 +116,7 @@ var star_chart = {
             .style("font-size", "11px")
             .attr("text-anchor", "middle")
             .attr("dy", "1.5em")
-            .attr("transform", function (d, i) { return "translate(0, "+ label_translate_y + ")" })
+            .attr("transform", function (d, i) { return "translate(0, " + label_translate_y + ")" })
             .attr("x", function (d, i) { return width / 2 * (1 - factor_legend * Math.sin(i * radians / total)) - 60 * Math.sin(i * radians / total); })
             .attr("y", function (d, i) { return height / 2 * (1 - Math.cos(i * radians / total)) - 20 * Math.cos(i * radians / total); });
 
@@ -135,8 +136,11 @@ var star_chart = {
                 .enter()
                 .append("polygon")
                 .attr("class", "radar-chart-serie" + series)
-                .style("stroke-width", "4px")
+                // Process only the click events on the stroke of the polygon
+                .attr("pointer-events", "stroke")
+                .style("stroke-width", "4")
                 .style("stroke", color(series))
+                .style("stroke-opacity", 0.9)
                 .attr("points", function (d) {
                     var str = "";
                     for (var pti = 0; pti < d.length; pti++) {
@@ -144,28 +148,39 @@ var star_chart = {
                     }
                     return str;
                 })
-                .style("fill", "none")
                 .style("fill-opacity", 0)
+                .style("fill", "#ffffff")
+
                 // Click action
                 .on("click", function (d) {
                     selected = "polygon." + d3.select(this).attr("class");
                     // Animate the other polygons 
-                    g.selectAll("polygon").transition(transition_duration)
-                        .style("stroke-width", "2px")
+                    g.selectAll("polygon").transition()
+                        //.ease(ease_type)
+                        .duration(transition_duration)
+                        .style("stroke-width", "1")
                         .style("stroke-opacity", 0.2);
                     // Animate the selected polygon
-                    g.selectAll(selected).transition(transition_duration)
+                    g.selectAll(selected).transition()
+                        .duration(transition_duration)
+                        //.ease(ease_type)
+                        // Fill the polygon using the stroke color
                         .style("fill", d3.select(this).style("stroke"))
-                        .style("fill-opacity", .8);
+                        .style("fill-opacity", 0.7)
+                        .attr("pointer-events", "visiblePoint");
                 })
                 // Mouseout action
                 .on('mouseout', function () {
-                    g.selectAll("polygon").transition(transition_duration)
-                        .style("fill-opacity", .0)
-                        .transition(transition_duration)
-                        .style("fill", "none")
+                    g.selectAll("polygon").transition()
+                        .duration(transition_duration)
+                        //.ease(ease_type)
+                        .style("fill-opacity", 0)
+                        .attr("pointer-events", "stroke")
+                        .transition()
+                        .duration(transition_duration)
+                        .style("fill", "#ffffff")
                         .style("stroke-width", "4px")
-                        .style("stroke-opacity", 1);
+                        .style("stroke-opacity", 0.9);
                 });
             series++;
         });
