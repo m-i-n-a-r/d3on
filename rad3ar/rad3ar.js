@@ -24,8 +24,8 @@ var vertex_radius = 4;
 var vertex_stroke_color = "#000000";
 var vertex_stroke = 1;
 var legend_font_color = "#111111";
-var transition_duration = 2000;
-var ease_type = "easeBack"; // easeElastic, easeBounce, easeLinear, easeSin, easeQuad, easeCubic, easePoly, easeCircle, easeExp, easeBack
+var transition_duration = 900;
+var ease_type = d3.easeCubic; // easeElastic, easeBounce, easeLinear, easeSin, easeQuad, easeCubic, easePoly, easeCircle, easeExp, easeBack
 var max_value = 100; // Max possible value for a data point attribute
 
 // Draw the star chart
@@ -156,30 +156,31 @@ var star_chart = {
                     selected = "polygon." + d3.select(this).attr("class");
                     // Animate the other polygons 
                     g.selectAll("polygon").transition()
-                        //.ease(ease_type)
+                        .ease(ease_type)
                         .duration(transition_duration)
                         .style("stroke-width", "1")
                         .style("stroke-opacity", 0.2);
                     // Animate the selected polygon
                     g.selectAll(selected).transition()
                         .duration(transition_duration)
-                        //.ease(ease_type)
+                        .ease(ease_type)
                         // Fill the polygon using the stroke color
                         .style("fill", d3.select(this).style("stroke"))
                         .style("fill-opacity", 0.7)
+                        .style("stroke-width", "5")
                         .attr("pointer-events", "visiblePoint");
                 })
                 // Mouseout action
                 .on('mouseout', function () {
                     g.selectAll("polygon").transition()
                         .duration(transition_duration)
-                        //.ease(ease_type)
+                        .ease(ease_type)
                         .style("fill-opacity", 0)
                         .attr("pointer-events", "stroke")
                         .transition()
                         .duration(transition_duration)
                         .style("fill", "#ffffff")
-                        .style("stroke-width", "4px")
+                        .style("stroke-width", "4")
                         .style("stroke-opacity", 0.9);
                 });
             series++;
