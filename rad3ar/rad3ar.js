@@ -135,7 +135,7 @@ var star_chart = {
                 .data([dataValues])
                 .enter()
                 .append("polygon")
-                .attr("class", "radar-chart-serie" + series)
+                .attr("class", "data-polygon" + series)
                 // Process only the click events on the stroke of the polygon
                 .attr("pointer-events", "stroke")
                 .style("stroke-width", "4")
@@ -156,10 +156,11 @@ var star_chart = {
                     selected = "polygon." + d3.select(this).attr("class");
                     // Animate the other polygons 
                     g.selectAll("polygon").transition()
-                        .ease(ease_type)
                         .duration(transition_duration)
+                        .ease(ease_type)
                         .style("stroke-width", "1")
-                        .style("stroke-opacity", 0.2);
+                        .style("stroke-opacity", 0.2)
+                        .attr("pointer-events", "none");
                     // Animate the selected polygon
                     g.selectAll(selected).transition()
                         .duration(transition_duration)
@@ -169,19 +170,27 @@ var star_chart = {
                         .style("fill-opacity", 0.7)
                         .style("stroke-width", "5")
                         .attr("pointer-events", "visiblePoint");
+                    // Suspend pointer events on vertices, allowing the pointer to move in the polygon area without losing the focus on the polygon itself
+                    g.selectAll(".data-vertex").transition()
+                        .duration(1)
+                        .attr("pointer-events", "none");
                 })
                 // Mouseout action
                 .on('mouseout', function () {
                     g.selectAll("polygon").transition()
-                        .duration(transition_duration)
+                        .duration(transition_duration / 1.5)
                         .ease(ease_type)
                         .style("fill-opacity", 0)
                         .attr("pointer-events", "stroke")
                         .transition()
-                        .duration(transition_duration)
+                        .duration(transition_duration / 1.5)
                         .style("fill", "#ffffff")
                         .style("stroke-width", "4")
                         .style("stroke-opacity", 0.9);
+                    // Restore pointer events on vertices
+                    g.selectAll(".data-vertex").transition()
+                        .duration(1)
+                        .attr("pointer-events", "visiblePoint");
                 });
             series++;
         });
@@ -193,7 +202,7 @@ var star_chart = {
             g.selectAll(".nodes")
                 .data(y).enter()
                 .append("svg:circle")
-                .attr("class", "radar-chart-serie" + series)
+                .attr("class", "data-vertex")
                 .attr('r', vertex_radius)
                 .attr("alt", function (j) { return Math.max(j.value, 0) })
                 .attr("cx", function (j, i) {
