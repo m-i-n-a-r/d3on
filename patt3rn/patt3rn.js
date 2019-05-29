@@ -45,17 +45,20 @@ d3.json("patt3rn-data.json", function (error, data) {
             // The scaling isn't from the center, and the image needs to be translated to the right to be centered
             .attr("width", data[i][4]['value'])
             .attr("x", (svg_primary_width - data[i][4]['value']) / 2)
-            .attr("height", svg_primary_height);
+            .attr("height", svg_primary_height)
+            .attr("preserveAspectRatio", "none");
 
         pattern_svgs[i].append("image")
             .attr("xlink:href", "plane-tail.svg")
             .attr("width", svg_primary_width)
-            .attr("height", svg_primary_height);
+            .attr("height", svg_primary_height)
+            .attr("preserveAspectRatio", "none");
 
         pattern_svgs[i].append("image")
             .attr("xlink:href", "plane-body.svg")
             .attr("width", svg_primary_width)
-            .attr("height", svg_primary_height);
+            .attr("height", svg_primary_height)
+            .attr("preserveAspectRatio", "none");
 
     });
 });
